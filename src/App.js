@@ -26,13 +26,17 @@ class App extends Component {
     });
   
     //Sincronizacion con database
-    const rootRef = firebase.database().ref().child('fooderhci');
+
+    firebase.database().ref().on('value', snap => console.log(snap.val()));
+    const rootRef = firebase.database().ref();
     const nombre = rootRef.child('nombre');
     const pictures = rootRef.child('pictures');
 
     nombre.on('value', snap => {
+      var test = snap.val();
+      console.log(test)
       this.setState({
-        nombre: snap.val()
+        nombre: test
       });
     });
 
@@ -128,9 +132,9 @@ class App extends Component {
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Bienvenido a Fooder</h1>
         </header>
-        <p className="login">
+        <div className="login">
           {this.renderLoginButton()}
-        </p>
+        </div>
         <h1>{this.state.nombre}</h1>
       </div>
     );
