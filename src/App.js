@@ -4,22 +4,13 @@ import * as firebase from 'firebase';
 import FileUpload from './FileUpload';
 import './App.css';
 
-[
-  {category: "Sporting Goods", price: "$49.99", stocked: true, name: "Football"},
-  {category: "Sporting Goods", price: "$9.99", stocked: true, name: "Baseball"},
-  {category: "Sporting Goods", price: "$29.99", stocked: false, name: "Basketball"},
-  {category: "Electronics", price: "$99.99", stocked: true, name: "iPod Touch"},
-  {category: "Electronics", price: "$399.99", stocked: false, name: "iPhone 5"},
-  {category: "Electronics", price: "$199.99", stocked: true, name: "Nexus 7"}
-];
-
 class App extends Component {
 
   constructor(){
     super();
     this.state = {
       user:null,
-      pictures: [],
+      restaurantes: [],
       nombre: 10
     };
     this.handleAuth = this.handleAuth.bind(this);
@@ -38,7 +29,7 @@ class App extends Component {
     firebase.database().ref().on('value', snap => console.log(snap.val()));
     const rootRef = firebase.database().ref();
     const nombre = rootRef.child('nombre');
-    const pictures = rootRef.child('pictures');
+    const restaurantes = rootRef.child('restaurantes');
 
     nombre.on('value', snap => {
       var test = snap.val();
@@ -48,9 +39,9 @@ class App extends Component {
       });
     });
 
-    pictures.on('child_added', snapshot =>{
+    restaurantes.on('child_added', snapshot =>{
       this.setState({
-        pictures: this.state.pictures.concat(snapshot.val())
+        restaurantes: this.state.restaurantes.concat(snapshot.val())
       });
     });
   }
@@ -88,27 +79,10 @@ class App extends Component {
         image: task.snapshot.downloadURL
       };
 
-      const dbRef = firebase.database().ref('pictures');
+      const dbRef = firebase.database().ref('restaurantes');
       const newPicture = dbRef.push();
       newPicture.set(record);
     });
-  }
-
-  renderRestauranteIndividual(){
-    return(
-      <div class="individual">
-        <img class="imagen" style="width:100%" src="restaurantes/${infoVinilo.imagen}" class="img-responsive"/>
-        <div class="middle">
-              <button
-              ><h4 class="text">Ver más</h4>
-              </button>
-        </div>
-        <h4><strong>${infoVinilo.nombre}</strong></h4>
-			<p>${infoVinilo.direccion}</p>
-			<p>Precio promedio $ ${infoVinilo.direccion}</p>
-			<h4 class="colorPrice">Valoración <strong>${infoVinilo.ranking}</strong> (${infoVinilo.review} votos) </h4>
-      </div>
-    );
   }
 
 
@@ -118,28 +92,44 @@ class App extends Component {
       return(
         <div className='App-intro'>
 
-          <img width='100' src={this.state.user.photoURL} alt={this.state.user.displayName}/>
-          <p>Hola, {this.state.user.displayName}</p>
-          <button onClick={this.handleLogout}>
-          Salir
-          </button>
+
+        <div className='fondo'>
+              <div id='container'>
+                <h1 className='titleHeader'>Fooder</h1>
+                <h4 className='subtitulo' onClick={this.handleAuth}> Hola, {this.state.user.displayName}</h4>
+                <img width='100' src={this.state.user.photoURL} alt={this.state.user.displayName}/>
+                <div className='blurBtn'>
+                <button className='empezar' onClick={this.handleLogout}>Salir</button>
+                </div>
+              </div>
+              <div className='arrow'><img src='img/arrowsm.png'/></div>
+          </div>
+
+          
 
           <FileUpload onUpload={ this.handleUpload }/>
-
           {
-            this.state.pictures.map(picture => (
-              <div className='App-card'>
-                <figure className='App-card-image'>
-                <img width='320' src={picture.image}/>
-                <figcaption className='App-card-footer'>
-                <img className='App-card-avatar' src={picture.photoURL} alt={picture.displayName}/>
-                <p>{picture.displayName}</p>
-                </figcaption>
-                </figure>
+            this.state.restaurantes.map(elemento => (
+              <div className='individual' data-size="1280x857">
+                <a href={elemento.imagen} class="img-wrap">
+                <img src={elemento.imagen} alt={elemento.nombre}/></a>
+                
+                <div class="description">
+                  <h3>{elemento.nombre}</h3>
+                  <p>{elemento.descripcion} <em>&mdash; {elemento.direccion}</em></p>
+                  <div className="details">
+                    <ul>
+                      <li><i className="icon icon-camera"></i><span>{elemento.ranking}</span></li>
+                      <li><i className="icon icon-focal_length"></i><span>{elemento.review}</span></li>
+                      <li><i className="icon icon-aperture"></i><span>{elemento.zona}</span></li>
+                      <li><i className="icon icon-exposure_time"></i><span>{elemento.precio}00</span></li>
+                      <li><i className="icon icon-iso"></i><span>{elemento.phone}</span></li>
+                    </ul>
+                  </div>
+                </div>
               </div>
             )).reverse()
           }
-
         </div>
       );
     }else{
@@ -164,10 +154,13 @@ class App extends Component {
     return (
       <div className="App">
 
-        <div className="login">
-          {this.renderLoginButton()}
+        <div className="login container">
+          <div className="content">
+            <div className="content"> 
+              {this.renderLoginButton()}
+            </div>
+          </div>
         </div>
-        
       </div>
     );
   }
