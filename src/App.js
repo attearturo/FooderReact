@@ -4,6 +4,15 @@ import * as firebase from 'firebase';
 import FileUpload from './FileUpload';
 import './App.css';
 
+[
+  {category: "Sporting Goods", price: "$49.99", stocked: true, name: "Football"},
+  {category: "Sporting Goods", price: "$9.99", stocked: true, name: "Baseball"},
+  {category: "Sporting Goods", price: "$29.99", stocked: false, name: "Basketball"},
+  {category: "Electronics", price: "$99.99", stocked: true, name: "iPod Touch"},
+  {category: "Electronics", price: "$399.99", stocked: false, name: "iPhone 5"},
+  {category: "Electronics", price: "$199.99", stocked: true, name: "Nexus 7"}
+];
+
 class App extends Component {
 
   constructor(){
@@ -26,7 +35,6 @@ class App extends Component {
     });
   
     //Sincronizacion con database
-
     firebase.database().ref().on('value', snap => console.log(snap.val()));
     const rootRef = firebase.database().ref();
     const nombre = rootRef.child('nombre');
@@ -86,12 +94,30 @@ class App extends Component {
     });
   }
 
+  renderRestauranteIndividual(){
+    return(
+      <div class="individual">
+        <img class="imagen" style="width:100%" src="restaurantes/${infoVinilo.imagen}" class="img-responsive"/>
+        <div class="middle">
+              <button
+              ><h4 class="text">Ver más</h4>
+              </button>
+        </div>
+        <h4><strong>${infoVinilo.nombre}</strong></h4>
+			<p>${infoVinilo.direccion}</p>
+			<p>Precio promedio $ ${infoVinilo.direccion}</p>
+			<h4 class="colorPrice">Valoración <strong>${infoVinilo.ranking}</strong> (${infoVinilo.review} votos) </h4>
+      </div>
+    );
+  }
+
 
   renderLoginButton(){
     //Si el usuario está logueado
     if(this.state.user){
       return(
         <div className='App-intro'>
+
           <img width='100' src={this.state.user.photoURL} alt={this.state.user.displayName}/>
           <p>Hola, {this.state.user.displayName}</p>
           <button onClick={this.handleLogout}>
@@ -105,10 +131,10 @@ class App extends Component {
               <div className='App-card'>
                 <figure className='App-card-image'>
                 <img width='320' src={picture.image}/>
-                <figCaption className='App-card-footer'>
+                <figcaption className='App-card-footer'>
                 <img className='App-card-avatar' src={picture.photoURL} alt={picture.displayName}/>
-                <span className='App-card-name'>{picture.displayName}</span>
-                </figCaption>
+                <p>{picture.displayName}</p>
+                </figcaption>
                 </figure>
               </div>
             )).reverse()
@@ -119,23 +145,29 @@ class App extends Component {
     }else{
     //Si no lo está
     return(
-    <button onClick={this.handleAuth}>Login con Google</button>
+      <div className='fondo'>
+      <div id='container'>
+        <h1 className='titleHeader'>Fooder</h1>
+        <h4 className='subtitulo' onClick={this.handleAuth}> Arma tu plan, escoge a donde ir.</h4>
+        <div className='blurBtn'>
+        <button className='empezar' onClick={this.handleAuth}>Empezar</button>
+        <div className='blurBack'></div>
+        </div>
+      </div>
+      <div className='arrow'><img src='img/arrowsm.png'/></div>
+    </div>
     );
     }
   }
 
-
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Bienvenido a Fooder</h1>
-        </header>
+
         <div className="login">
           {this.renderLoginButton()}
         </div>
-        <h1>{this.state.nombre}</h1>
+        
       </div>
     );
   }
