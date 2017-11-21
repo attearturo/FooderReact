@@ -6,7 +6,9 @@
     "firebase": "^4.6.2",
     "react": "^16.1.0",
     "react-dom": "^16.1.0",
-    "react-scripts": "1.0.17"
+    "react-form": "^2.12.1",
+    "react-scripts": "1.0.17",
+    "react-star-rating": "^1.4.2"
   },
   "scripts": {
     "start": "react-scripts start",

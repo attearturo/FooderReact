@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import * as firebase from 'firebase';
 import FileUpload from './FileUpload';
 import './App.css';
+//import { Form, Text, Ckeckbox, RadioGroup, Radio } from 'react-form';
 
 class App extends Component {
 
@@ -11,11 +11,21 @@ class App extends Component {
     this.state = {
       user:null,
       restaurantes: [],
-      nombre: 10
+      precio: 0,
+      puntajeOrden: {
+        precio: "",
+        zona: "",
+        creatividad: "",
+        tranquilidad: "",
+        informalidad: "",
+        comida: "",
+    }
     };
     this.handleAuth = this.handleAuth.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
     this.handleUpload = this.handleUpload.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   componentDidMount (){
@@ -28,16 +38,7 @@ class App extends Component {
     //Sincronizacion con database
     firebase.database().ref().on('value', snap => console.log(snap.val()));
     const rootRef = firebase.database().ref();
-    const nombre = rootRef.child('nombre');
     const restaurantes = rootRef.child('restaurantes');
-
-    nombre.on('value', snap => {
-      var test = snap.val();
-      console.log(test)
-      this.setState({
-        nombre: test
-      });
-    });
 
     restaurantes.on('child_added', snapshot =>{
       this.setState({
@@ -58,7 +59,6 @@ class App extends Component {
     .then(result => console.log(`${result.user.email} ha cerrado sesión`))
     .catch(error => console.log(`Error ${error.code}: ${error.message}`));
   }
-
 
   handleUpload(event){
     const file = event.target.files[0];
@@ -85,6 +85,176 @@ class App extends Component {
     });
   }
 
+  handleChange(event){
+    this.setState({precio: event.target.value});
+  }
+
+  handleSubmit(event){
+    alert('El precio es de: ' + this.state.value);
+    event.preventDefault();
+  }
+
+  renderFiltros(){
+  
+    return(
+<header className="jumbotron text-center">
+        <p>Cuales son tus preferencias</p>
+
+        <h5>¿Que tal el ambiente?</h5>
+            <form className="form-inline container" onSubmit={this.handleSubmit}>
+
+            <div id="slidecontainer">
+              <input type="range" min="1" max="100" step='100' value={this.state.value} className="slider" id="myRange" onChange={this.handleChange}/>
+            </div>
+            
+            <select id="precio" className="form-control">
+                <option value="">Precio</option>
+                <option value="10-20">De $10.000 a $20.000</option>
+                <option value="20-40">De $20.000 a $40.000</option>
+                <option value="40-60">De $40.000 a $60.000</option>
+                <option value="60-80">De $60.000 a $80.000</option>
+                <option value="80-999">De $80.000 en adelante</option>
+            </select>
+            
+            <select id="zona" className="form-control">
+                <option value="">Zona</option>
+                <option value="Sur">Sur</option>
+                <option value="Norte">Norte</option>
+                <option value="Occidente">Occidente</option>
+                <option value="Oriente">Oriente</option>
+                <option value="Centro">Centro</option>
+            </select>
+              
+            <select id="creatividad" className="form-control">
+                <option value="">Tradicional/Creativo</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+
+
+            <select id="tranquilidad" className="form-control">
+                <option value="">Tranquilo/Animado</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+
+
+            <select id="informalidad" className="form-control">
+                <option value="">Elegante/Informal</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+
+            <select id="comida" className="form-control">
+                <option value="">¿Tipo de comida?</option>
+                <option value="Hamburguesa">Hamburguesa</option>
+                <option value="Pizza">Pizza</option>
+                <option value="Comida italiana">Comida italiana</option>
+                <option value="Pollo o alitas">Pollo o alitas</option>
+                <option value="Comida colombiana">Comida colombiana</option>
+                <option value="Comida asiática">Comida asiática</option>
+                <option value="Carnes y parrillas">Carnes y parrillas</option>
+                <option value="Sushi">Sushi</option>
+                <option value="Comida mexicana">Comida mexicana</option>
+                <option value="Bebidas con alcohol">Bebidas con alcohol</option>
+                <option value="Bebidas sin alcohol">Bebidas sin alcohol</option>
+            </select>
+            
+            <button className="recomendar container col-lg-6" type="submit" value='Submit'>
+            Recomendar
+            </button>
+
+        </form>
+        
+    </header>
+
+          
+
+    );
+  }
+
+  setFiltros() {
+
+    //var header = document.querySelector('header');
+    // puntajeOrden.precio = header.querySelector('#precio');
+    // puntajeOrden.zona = header.querySelector('#zona');
+    // puntajeOrden.creatividad = header.querySelector('#creatividad');
+    // puntajeOrden.tranquilidad = header.querySelector('#tranquilidad');
+    // puntajeOrden.informalidad = header.querySelector('#informalidad');
+    // puntajeOrden.comida = header.querySelector('#comida');
+    // this.ordenar(puntajeOrden);  
+}
+
+  ordenar(puntajeGlobal){
+    var Precio = puntajeGlobal.precio.value;
+    var Zona = puntajeGlobal.zona.value;
+    var Tranquilidad = puntajeGlobal.tranquilidad.value;
+    var Creatividad = puntajeGlobal.creatividad.value;
+    var Informalidad = puntajeGlobal.informalidad.value;
+    var Comida = puntajeGlobal.comida.value;
+
+    console.log(
+        ' Precio: ' + Precio +
+        ' Zona: ' + Zona +
+        ' Creatividad: ' + Creatividad +
+        ' Tranquilidad: ' + Tranquilidad +
+        ' Informalidad: ' + Informalidad +
+        ' Comida: ' + Comida
+    )
+
+    var sumar = this.state.restaurantes.forEach(function (elemento) {
+        elemento.puntaje = 0;
+
+        var rango = Precio.split("-");
+        if (elemento.precio >= rango[0] && elemento.precio < rango[1]) {
+            elemento.puntaje += 1;
+        }
+        
+        if (Zona.includes(elemento.zona)) {
+            elemento.puntaje += 1;
+        }            
+        
+        if (elemento.tranquilidad <= Tranquilidad) {
+            elemento.puntaje += 1;
+        }            
+        
+        if (elemento.formalismo <= Informalidad) {
+            elemento.puntaje += 1;
+        }
+
+        if (elemento.formalismo <= Informalidad) {
+            elemento.puntaje += 1;
+        }
+
+        var menuComida = elemento.especialidad.split(",");
+        menuComida.forEach(function(tipo){
+            if (Comida.includes(tipo)) {
+                elemento.puntaje += 1;
+            }   
+        });
+        
+        elemento.puntaje += elemento.ranking;
+        console.log(elemento.puntaje);
+    });
+    
+    var listaOrdenada = this.state.restaurantes
+        .sort(function (a, b) {
+            return a.puntaje < b.puntaje;
+        });
+
+  }
+
+
+
 
   renderLoginButton(){
     //Si el usuario está logueado
@@ -102,21 +272,23 @@ class App extends Component {
                 <button className='empezar' onClick={this.handleLogout}>Salir</button>
                 </div>
               </div>
-              <div className='arrow'><img src='img/arrowsm.png'/></div>
+              <div className='arrow'><img src='img/arrowsm.png' alt=''/></div>
           </div>
 
-          
-
+          {this.renderFiltros()}
           <FileUpload onUpload={ this.handleUpload }/>
+          
           {
             this.state.restaurantes.map(elemento => (
-              <div className='individual' data-size="1280x857">
-                <a href={elemento.imagen} class="img-wrap">
-                <img src={elemento.imagen} alt={elemento.nombre}/></a>
-                
-                <div class="description">
-                  <h3>{elemento.nombre}</h3>
+              <div className='col-md-4 lista'>
+              
+                <img className='imagen img-responsive' src={elemento.imagen} alt={elemento.nombre}/>
+                <div className="middle">
+                <button><h4 className="text">Ver más</h4></button>
+                </div>
+                  <h4><strong>{elemento.nombre}</strong></h4>
                   <p>{elemento.descripcion} <em>&mdash; {elemento.direccion}</em></p>
+                  <h3 className="colorPrice">Valoración <strong>${elemento.ranking}</strong> (${elemento.review} votos) </h3>
                   <div className="details">
                     <ul>
                       <li><i className="icon icon-camera"></i><span>{elemento.ranking}</span></li>
@@ -127,7 +299,6 @@ class App extends Component {
                     </ul>
                   </div>
                 </div>
-              </div>
             )).reverse()
           }
         </div>
@@ -144,7 +315,7 @@ class App extends Component {
         <div className='blurBack'></div>
         </div>
       </div>
-      <div className='arrow'><img src='img/arrowsm.png'/></div>
+      <div className='arrow'><img src='img/arrowsm.png' alt=''/></div>
     </div>
     );
     }

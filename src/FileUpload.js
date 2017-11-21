@@ -1,5 +1,4 @@
 import React from 'react';
-import firebase from 'firebase';
 
 class FileUpload extends React.Component {
     constructor(){
