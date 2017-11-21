@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as firebase from 'firebase';
 import FileUpload from './FileUpload';
 import './App.css';
-import StepRangeSlider from 'react-step-range-slider'
+//import StepRangeSlider from 'react-step-range-slider'
 
 class App extends Component {
 
@@ -11,8 +11,14 @@ class App extends Component {
     this.state = {
       user:null,
       restaurantes: [],
-      value: 0,
-      precio:0,
+
+      precio: '',
+      zona: '',
+      creatividad: '',
+      tranquilidad: '',
+      informalidad: "",
+      comida: "",
+
       puntajeOrden: {
         precio: "",
         zona: "",
@@ -21,13 +27,6 @@ class App extends Component {
         informalidad: "",
         comida: "",
     },
-    range : [
-      { value: 0, step: 1 }, // acts as min value
-      { value: 20, step: 5 }, 
-      { value: 50, step: 10 },
-      { value: 100, step: 50 },
-      { value: 500 } // acts as max value
-    ]
     };
     this.handleAuth = this.handleAuth.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
@@ -91,32 +90,27 @@ class App extends Component {
   }
 
   handleChange(event){
-    this.setState({value: event.target.value});
-    this.setState({precio: event.target.value});
+    this.setState({ 
+     [event.target.name] : event.target.value
+    });
   }
 
   handleSubmit(event){
-    alert('Precio Slider: ' + this.state.value + 'Select: ' + this.state.precio);
+    alert('Select: ' + this.state.precio + this.state.zona
+    + this.state.tranquilidad+ this.state.creatividad+ this.state.comida);
     event.preventDefault();
   }
 
   renderFiltros(){
-  
     return(
-<header className="jumbotron text-center">
+    <header className="jumbotron text-center">
         <p>Cuales son tus preferencias</p>
 
         <h5>¿Que tal el ambiente?</h5>
             <form className="form-inline container" onSubmit={this.handleSubmit}>
 
-            <StepRangeSlider 
-              value={5} 
-              range={range} 
-              onChange={value => console.log(value)}
-            />
-
-            <select value={this.state.value} onChange={this.handleChange} 
-            id="precio" className="form-control">
+            <select value={this.state.precio} onChange={this.handleChange} 
+            name='precio' id="precio" className="form-control">
                 <option value="">Precio</option>
                 <option value="10-20">De $10.000 a $20.000</option>
                 <option value="20-40">De $20.000 a $40.000</option>
@@ -125,7 +119,8 @@ class App extends Component {
                 <option value="80-999">De $80.000 en adelante</option>
             </select>
             
-            <select id="zona" className="form-control">
+            <select value={this.state.zona} onChange={this.handleChange} 
+            name='zona' id="zona" className="form-control">
                 <option value="">Zona</option>
                 <option value="Sur">Sur</option>
                 <option value="Norte">Norte</option>
@@ -134,7 +129,8 @@ class App extends Component {
                 <option value="Centro">Centro</option>
             </select>
               
-            <select id="creatividad" className="form-control">
+            <select value={this.state.creatividad} onChange={this.handleChange}
+            name='creatividad' id="creatividad" className="form-control">
                 <option value="">Tradicional/Creativo</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
@@ -144,7 +140,8 @@ class App extends Component {
             </select>
 
 
-            <select id="tranquilidad" className="form-control">
+            <select value={this.state.tranquilidad} onChange={this.handleChange}
+            name='tranquilidad' id="tranquilidad" className="form-control">
                 <option value="">Tranquilo/Animado</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
@@ -154,7 +151,8 @@ class App extends Component {
             </select>
 
 
-            <select id="informalidad" className="form-control">
+            <select value={this.state.informalidad} onChange={this.handleChange}
+            name='informalidad' id="informalidad" className="form-control">
                 <option value="">Elegante/Informal</option>
                 <option value="1">1</option>
                 <option value="2">2</option>
@@ -163,7 +161,8 @@ class App extends Component {
                 <option value="5">5</option>
             </select>
 
-            <select id="comida" className="form-control">
+            <select value={this.state.comida} onChange={this.handleChange}
+            name='comida' id="comida" className="form-control">
                 <option value="">¿Tipo de comida?</option>
                 <option value="Hamburguesa">Hamburguesa</option>
                 <option value="Pizza">Pizza</option>
@@ -190,18 +189,6 @@ class App extends Component {
 
     );
   }
-
-  setFiltros() {
-
-    //var header = document.querySelector('header');
-    // puntajeOrden.precio = header.querySelector('#precio');
-    // puntajeOrden.zona = header.querySelector('#zona');
-    // puntajeOrden.creatividad = header.querySelector('#creatividad');
-    // puntajeOrden.tranquilidad = header.querySelector('#tranquilidad');
-    // puntajeOrden.informalidad = header.querySelector('#informalidad');
-    // puntajeOrden.comida = header.querySelector('#comida');
-    // this.ordenar(puntajeOrden);  
-}
 
   ordenar(puntajeGlobal){
     var Precio = puntajeGlobal.precio.value;
@@ -244,7 +231,7 @@ class App extends Component {
           
           {
             this.state.restaurantes.map(elemento => (
-              <li className='col-md-4 lista'>
+              <div className='col-md-4 lista' key = {elemento.nombre}>
               
                 <img className='imagen img-responsive' src={elemento.imagen} alt={elemento.nombre}/>
                 <div className="middle">
@@ -262,7 +249,7 @@ class App extends Component {
                       <li><i className="icon icon-iso"></i><span>{elemento.phone}</span></li>
                     </ul>
                   </div>
-                </li>
+                </div>
             ))
           }
         </div>
