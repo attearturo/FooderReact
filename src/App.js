@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as firebase from 'firebase';
 import FileUpload from './FileUpload';
 import './App.css';
-//import { Form, Text, Ckeckbox, RadioGroup, Radio } from 'react-form';
+import StepRangeSlider from 'react-step-range-slider'
 
 class App extends Component {
 
@@ -11,7 +11,8 @@ class App extends Component {
     this.state = {
       user:null,
       restaurantes: [],
-      precio: 0,
+      value: 0,
+      precio:0,
       puntajeOrden: {
         precio: "",
         zona: "",
@@ -19,7 +20,14 @@ class App extends Component {
         tranquilidad: "",
         informalidad: "",
         comida: "",
-    }
+    },
+    range : [
+      { value: 0, step: 1 }, // acts as min value
+      { value: 20, step: 5 }, 
+      { value: 50, step: 10 },
+      { value: 100, step: 50 },
+      { value: 500 } // acts as max value
+    ]
     };
     this.handleAuth = this.handleAuth.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
@@ -46,20 +54,17 @@ class App extends Component {
       });
     });
   }
-
   handleAuth(){
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider)
     .then(result => console.log(`${result.user.email} Ha iniciado sesión`))
     .catch(error => console.log(`Error ${error.code}: ${error.message}`));
   }
-
   handleLogout(){
     firebase.auth().signOut()
     .then(result => console.log(`${result.user.email} ha cerrado sesión`))
     .catch(error => console.log(`Error ${error.code}: ${error.message}`));
   }
-
   handleUpload(event){
     const file = event.target.files[0];
     const storageRef = firebase.storage().ref(`/fotos/${file.name}`);
@@ -86,11 +91,12 @@ class App extends Component {
   }
 
   handleChange(event){
+    this.setState({value: event.target.value});
     this.setState({precio: event.target.value});
   }
 
   handleSubmit(event){
-    alert('El precio es de: ' + this.state.value);
+    alert('Precio Slider: ' + this.state.value + 'Select: ' + this.state.precio);
     event.preventDefault();
   }
 
@@ -103,11 +109,14 @@ class App extends Component {
         <h5>¿Que tal el ambiente?</h5>
             <form className="form-inline container" onSubmit={this.handleSubmit}>
 
-            <div id="slidecontainer">
-              <input type="range" min="1" max="100" step='100' value={this.state.value} className="slider" id="myRange" onChange={this.handleChange}/>
-            </div>
-            
-            <select id="precio" className="form-control">
+            <StepRangeSlider 
+              value={5} 
+              range={range} 
+              onChange={value => console.log(value)}
+            />
+
+            <select value={this.state.value} onChange={this.handleChange} 
+            id="precio" className="form-control">
                 <option value="">Precio</option>
                 <option value="10-20">De $10.000 a $20.000</option>
                 <option value="20-40">De $20.000 a $40.000</option>
@@ -210,58 +219,13 @@ class App extends Component {
         ' Informalidad: ' + Informalidad +
         ' Comida: ' + Comida
     )
-
-    var sumar = this.state.restaurantes.forEach(function (elemento) {
-        elemento.puntaje = 0;
-
-        var rango = Precio.split("-");
-        if (elemento.precio >= rango[0] && elemento.precio < rango[1]) {
-            elemento.puntaje += 1;
-        }
-        
-        if (Zona.includes(elemento.zona)) {
-            elemento.puntaje += 1;
-        }            
-        
-        if (elemento.tranquilidad <= Tranquilidad) {
-            elemento.puntaje += 1;
-        }            
-        
-        if (elemento.formalismo <= Informalidad) {
-            elemento.puntaje += 1;
-        }
-
-        if (elemento.formalismo <= Informalidad) {
-            elemento.puntaje += 1;
-        }
-
-        var menuComida = elemento.especialidad.split(",");
-        menuComida.forEach(function(tipo){
-            if (Comida.includes(tipo)) {
-                elemento.puntaje += 1;
-            }   
-        });
-        
-        elemento.puntaje += elemento.ranking;
-        console.log(elemento.puntaje);
-    });
-    
-    var listaOrdenada = this.state.restaurantes
-        .sort(function (a, b) {
-            return a.puntaje < b.puntaje;
-        });
-
   }
-
-
-
 
   renderLoginButton(){
     //Si el usuario está logueado
     if(this.state.user){
       return(
         <div className='App-intro'>
-
 
         <div className='fondo'>
               <div id='container'>
@@ -280,7 +244,7 @@ class App extends Component {
           
           {
             this.state.restaurantes.map(elemento => (
-              <div className='col-md-4 lista'>
+              <li className='col-md-4 lista'>
               
                 <img className='imagen img-responsive' src={elemento.imagen} alt={elemento.nombre}/>
                 <div className="middle">
@@ -298,8 +262,8 @@ class App extends Component {
                       <li><i className="icon icon-iso"></i><span>{elemento.phone}</span></li>
                     </ul>
                   </div>
-                </div>
-            )).reverse()
+                </li>
+            ))
           }
         </div>
       );
@@ -324,13 +288,8 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-
         <div className="login container">
-          <div className="content">
-            <div className="content"> 
               {this.renderLoginButton()}
-            </div>
-          </div>
         </div>
       </div>
     );

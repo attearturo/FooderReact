@@ -8,7 +8,8 @@
     "react-dom": "^16.1.0",
     "react-form": "^2.12.1",
     "react-scripts": "1.0.17",
-    "react-star-rating": "^1.4.2"
+    "react-star-rating": "^1.4.2",
+    "react-step-range-slider": "^1.4.1"
   },
   "scripts": {
     "start": "react-scripts start",
