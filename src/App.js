@@ -18,15 +18,6 @@ class App extends Component {
       tranquilidad: '',
       informalidad: "",
       comida: "",
-
-      puntajeOrden: {
-        precio: "",
-        zona: "",
-        creatividad: "",
-        tranquilidad: "",
-        informalidad: "",
-        comida: "",
-    },
     };
     this.handleAuth = this.handleAuth.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
@@ -34,7 +25,6 @@ class App extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
-
   componentDidMount (){
     //Sincronización con autenticacion
     firebase.auth().onAuthStateChanged(user => {
@@ -49,8 +39,10 @@ class App extends Component {
 
     restaurantes.on('child_added', snapshot =>{
       this.setState({
-        restaurantes: this.state.restaurantes.concat(snapshot.val())
-      });
+        restaurantes: this.state.restaurantes.concat(snapshot.val()).sort(function (a, b){
+          return a.ranking < b.ranking
+          })
+        });
     });
   }
   handleAuth(){
@@ -88,26 +80,78 @@ class App extends Component {
       newPicture.set(record);
     });
   }
-
   handleChange(event){
-    this.setState({ 
+    this.setState({
      [event.target.name] : event.target.value
     });
   }
-
   handleSubmit(event){
-    alert('Select: ' + this.state.precio + this.state.zona
+    console.log('Select: ' + this.state.precio + this.state.zona
     + this.state.tranquilidad+ this.state.creatividad+ this.state.comida);
     event.preventDefault();
-  }
+    var sumarPuntaje = this.state.restaurantes.forEach(function (elemento) {
+      elemento.puntaje = 0;
 
+      var rango = this.state.precio.split("-");
+      if (elemento.precio >= rango[0] && elemento.precio < rango[1]) {
+          elemento.puntaje += 1;
+      }
+      
+      if (this.state.zona.includes(elemento.zona)) {
+          elemento.puntaje += 1;
+      }            
+      
+      if (elemento.tranquilidad <= this.state.tranquilidad) {
+          elemento.puntaje += 1;
+      }            
+      
+      if (elemento.creatividad <= this.state.creatividad) {
+          elemento.puntaje += 1;
+      }
+
+      if (elemento.formalismo <= this.state.informalidad) {
+          elemento.puntaje += 1;
+      }
+
+      var menuComida = elemento.especialidad.split(",");
+      menuComida.forEach(function(tipo){
+          if (this.state.comida.includes(tipo)) {
+              elemento.puntaje += 1;
+          }   
+      });
+      
+      elemento.puntaje += elemento.ranking;
+      console.log(elemento.puntaje);
+  });
+
+    this.state.restaurantes.sort(function (a, b){
+      return a.puntaje < b.puntaje
+    })
+  }
+  renderIntro(){
+    return(
+      <div className='fondo'>
+      <div id='container'>
+        <h1 className='titleHeader'>Fooder</h1>
+        <h4 className='subtitulo' onClick={this.handleAuth}> Hola, {this.state.user.displayName}</h4>
+        <img width='100' src={this.state.user.photoURL} alt={this.state.user.displayName}/>
+        <div className='blurBtn'>
+        <button className='empezar' onClick={this.handleLogout}>Salir</button>
+        </div>
+      </div>
+      <div className='arrow'><img src='img/arrowsm.png' alt=''/></div>
+      </div>
+    )
+  }
   renderFiltros(){
     return(
+
     <header className="jumbotron text-center">
         <p>Cuales son tus preferencias</p>
 
         <h5>¿Que tal el ambiente?</h5>
-            <form className="form-inline container" onSubmit={this.handleSubmit}>
+            <form className="form-inline container" 
+            onChange={this.handleChange} onSubmit={this.handleSubmit}>
 
             <select value={this.state.precio} onChange={this.handleChange} 
             name='precio' id="precio" className="form-control">
@@ -118,7 +162,6 @@ class App extends Component {
                 <option value="60-80">De $60.000 a $80.000</option>
                 <option value="80-999">De $80.000 en adelante</option>
             </select>
-            
             <select value={this.state.zona} onChange={this.handleChange} 
             name='zona' id="zona" className="form-control">
                 <option value="">Zona</option>
@@ -128,7 +171,6 @@ class App extends Component {
                 <option value="Oriente">Oriente</option>
                 <option value="Centro">Centro</option>
             </select>
-              
             <select value={this.state.creatividad} onChange={this.handleChange}
             name='creatividad' id="creatividad" className="form-control">
                 <option value="">Tradicional/Creativo</option>
@@ -138,8 +180,6 @@ class App extends Component {
                 <option value="4">4</option>
                 <option value="5">5</option>
             </select>
-
-
             <select value={this.state.tranquilidad} onChange={this.handleChange}
             name='tranquilidad' id="tranquilidad" className="form-control">
                 <option value="">Tranquilo/Animado</option>
@@ -149,8 +189,6 @@ class App extends Component {
                 <option value="4">4</option>
                 <option value="5">5</option>
             </select>
-
-
             <select value={this.state.informalidad} onChange={this.handleChange}
             name='informalidad' id="informalidad" className="form-control">
                 <option value="">Elegante/Informal</option>
@@ -160,7 +198,6 @@ class App extends Component {
                 <option value="4">4</option>
                 <option value="5">5</option>
             </select>
-
             <select value={this.state.comida} onChange={this.handleChange}
             name='comida' id="comida" className="form-control">
                 <option value="">¿Tipo de comida?</option>
@@ -177,54 +214,20 @@ class App extends Component {
                 <option value="Bebidas sin alcohol">Bebidas sin alcohol</option>
             </select>
             
-            <button className="recomendar container col-lg-6" type="submit" value='Submit'>
+            <button className="recomendar container col-lg-6" type="submit" 
+            value='Submit'>
             Recomendar
             </button>
-
         </form>
-        
-    </header>
-
-          
+      </header>
 
     );
   }
-
-  ordenar(puntajeGlobal){
-    var Precio = puntajeGlobal.precio.value;
-    var Zona = puntajeGlobal.zona.value;
-    var Tranquilidad = puntajeGlobal.tranquilidad.value;
-    var Creatividad = puntajeGlobal.creatividad.value;
-    var Informalidad = puntajeGlobal.informalidad.value;
-    var Comida = puntajeGlobal.comida.value;
-
-    console.log(
-        ' Precio: ' + Precio +
-        ' Zona: ' + Zona +
-        ' Creatividad: ' + Creatividad +
-        ' Tranquilidad: ' + Tranquilidad +
-        ' Informalidad: ' + Informalidad +
-        ' Comida: ' + Comida
-    )
-  }
-
   renderLoginButton(){
     //Si el usuario está logueado
     if(this.state.user){
       return(
         <div className='App-intro'>
-
-        <div className='fondo'>
-              <div id='container'>
-                <h1 className='titleHeader'>Fooder</h1>
-                <h4 className='subtitulo' onClick={this.handleAuth}> Hola, {this.state.user.displayName}</h4>
-                <img width='100' src={this.state.user.photoURL} alt={this.state.user.displayName}/>
-                <div className='blurBtn'>
-                <button className='empezar' onClick={this.handleLogout}>Salir</button>
-                </div>
-              </div>
-              <div className='arrow'><img src='img/arrowsm.png' alt=''/></div>
-          </div>
 
           {this.renderFiltros()}
           <FileUpload onUpload={ this.handleUpload }/>
@@ -235,20 +238,11 @@ class App extends Component {
               
                 <img className='imagen img-responsive' src={elemento.imagen} alt={elemento.nombre}/>
                 <div className="middle">
-                <button><h4 className="text">Ver más</h4></button>
+                <button className="text">Ver más</button>
                 </div>
                   <h4><strong>{elemento.nombre}</strong></h4>
-                  <p>{elemento.descripcion} <em>&mdash; {elemento.direccion}</em></p>
+                  <p>{elemento.ranking} <em>&mdash; {elemento.direccion}</em></p>
                   <h3 className="colorPrice">Valoración <strong>${elemento.ranking}</strong> (${elemento.review} votos) </h3>
-                  <div className="details">
-                    <ul>
-                      <li><i className="icon icon-camera"></i><span>{elemento.ranking}</span></li>
-                      <li><i className="icon icon-focal_length"></i><span>{elemento.review}</span></li>
-                      <li><i className="icon icon-aperture"></i><span>{elemento.zona}</span></li>
-                      <li><i className="icon icon-exposure_time"></i><span>{elemento.precio}00</span></li>
-                      <li><i className="icon icon-iso"></i><span>{elemento.phone}</span></li>
-                    </ul>
-                  </div>
                 </div>
             ))
           }
@@ -271,7 +265,6 @@ class App extends Component {
     );
     }
   }
-
   render() {
     return (
       <div className="App">
@@ -282,5 +275,4 @@ class App extends Component {
     );
   }
 }
-
 export default App;

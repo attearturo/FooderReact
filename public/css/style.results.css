@@ -373,7 +373,7 @@
         transition: .5s ease;
         opacity: 0;
         position: absolute;
-        top: 35%;
+        top: 100px;
         left: 50%;
         transform: translate(-50%, -50%);
         -ms-transform: translate(-50%, -50%);
@@ -389,18 +389,18 @@
     }
 
     .text {
+        border: none;
+        border-radius: 5px;
         font-size: 17px;
-        padding: 15px 10px;
+        padding: 30px;
 
     }
 
     .text:hover {
-        border: transparent;
-        color: none;
-        font-size: 17px;
-        padding: 15px 10px;
+        background-color: gray;
+        color: white;
         letter-spacing: 1.2;
-        transition: 1s;
+        transition: .5s;
         font-weight: bold;
     }
 
@@ -450,9 +450,6 @@
         .lista {
             height: 470px;
         }
-        .middle {
-            top: 35%;
-        }
     }
 
     @media (max-width: 991px) {
@@ -466,11 +463,6 @@
             margin: 0px 100px 30px 100px;
             height: auto;
         }
-
-        .middle {
-            top: 45%;
-        }
-
         .modal-body .imagenMini {
             display: none;
         }
@@ -481,9 +473,6 @@
     @media (max-width: 768px) {
         .lista {
             margin: 0px 50px 30px 50px;
-        }
-        .middle {
-            top: 43%;
         }
 
         .modal {
