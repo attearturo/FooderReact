@@ -10,14 +10,8 @@ class App extends Component {
     super();
     this.state = {
       user:null,
+      preferencias:null,
       restaurantes: [],
-
-      precio: '',
-      zona: '',
-      creatividad: '',
-      tranquilidad: '',
-      informalidad: "",
-      comida: "",
     };
     this.handleAuth = this.handleAuth.bind(this);
     this.handleLogout = this.handleLogout.bind(this);
@@ -36,19 +30,24 @@ class App extends Component {
     firebase.database().ref().on('value', snap => console.log(snap.val()));
     const rootRef = firebase.database().ref();
     const restaurantes = rootRef.child('restaurantes');
+    const preferencias = rootRef.child('preferencias');
 
     restaurantes.on('child_added', snapshot =>{
       this.setState({
         restaurantes: this.state.restaurantes.concat(snapshot.val()).sort(function (a, b){
           return a.ranking < b.ranking
-          })
+          }),
         });
+    });
+
+    preferencias.on('child_added', snap =>{
+      this.setState({ preferencias : snap.val() });
     });
   }
   handleAuth(){
     const provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithPopup(provider)
-    .then(result => console.log(`${result.user.email} Ha iniciado sesión`))
+    .then(result => console.log(`${result.user.email} Ha iniciado sesión`),)
     .catch(error => console.log(`Error ${error.code}: ${error.message}`));
   }
   handleLogout(){
@@ -82,48 +81,68 @@ class App extends Component {
   }
   handleChange(event){
     this.setState({
-     [event.target.name] : event.target.value
+      [event.target.name] : event.target.value
+    });
+
+    const preferenciasOnline = firebase.database().ref('preferencias');
+
+    preferenciasOnline.on('state_changed', snapshot =>{
+      this.setState({
+        [event.target.name] : event.target.value
+      })
+    }, error => {
+      console.log(error.message);
+    }, () => {
+      const preferencias = {
+        usuario: this.state.user.email
+      };
+
+      const nuevoFiltro = preferenciasOnline.push();
+      nuevoFiltro.set(preferencias);
     });
   }
   handleSubmit(event){
-    console.log('Select: ' + this.state.precio + this.state.zona
-    + this.state.tranquilidad+ this.state.creatividad+ this.state.comida);
+    alert(this.state.preferencias.precio);
     event.preventDefault();
+    const precio = this.state.preferencias.precio;
+    const zona = this.state.preferencias.zona;
+    const tranquilidad = this.state.preferencias.tranquilidad;
+    const informalidad = this.state.preferencias.informalidad;
+    const creatividad = this.state.preferencias.creatividad;
+    const comida = this.state.preferencias.comida;
+
     var sumarPuntaje = this.state.restaurantes.forEach(function (elemento) {
       elemento.puntaje = 0;
-
-      var rango = this.state.precio.split("-");
+        
+      if (zona.includes(elemento.zona)) {
+          elemento.puntaje += 1;
+      }   
+      
+      var rango = precio.split("-");
       if (elemento.precio >= rango[0] && elemento.precio < rango[1]) {
           elemento.puntaje += 1;
       }
-      
-      if (this.state.zona.includes(elemento.zona)) {
+    
+      if (elemento.tranquilidad <= tranquilidad) {
           elemento.puntaje += 1;
       }            
       
-      if (elemento.tranquilidad <= this.state.tranquilidad) {
-          elemento.puntaje += 1;
-      }            
-      
-      if (elemento.creatividad <= this.state.creatividad) {
+      if (elemento.creatividad <= creatividad) {
           elemento.puntaje += 1;
       }
 
-      if (elemento.formalismo <= this.state.informalidad) {
+      if (elemento.formalismo <= informalidad) {
           elemento.puntaje += 1;
       }
-
       var menuComida = elemento.especialidad.split(",");
       menuComida.forEach(function(tipo){
-          if (this.state.comida.includes(tipo)) {
+          if (comida.includes(tipo)) {
               elemento.puntaje += 1;
           }   
       });
-      
       elemento.puntaje += elemento.ranking;
-      console.log(elemento.puntaje);
+      console.log(elemento.puntaje)
   });
-
     this.state.restaurantes.sort(function (a, b){
       return a.puntaje < b.puntaje
     })
