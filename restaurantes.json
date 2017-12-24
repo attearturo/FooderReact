@@ -153,6 +153,60 @@
    "formalismo": 1,
    "puntaje": 4.5
  },
+    
+ "La Comitiva" :{
+   "nombre": "La Comitiva",
+   "descripcion": "Compartir con los amigos alrededor de un buen plato de comida es el mayor de los placeres.",
+   "especialidad": "comida italiana",
+   "precio": 61.2,
+   "direccion": "Calle 4 No. 34 -32 - San Fernando - Cali",
+   "ranking": 4.5,
+   "review": 186,
+   "phone": "(2) 3827292",
+   "tiempo": "1 a 2 horas",
+   "zona": "Norte",
+   "imagen": "https://firebasestorage.googleapis.com/v0/b/fooderhci.appspot.com/o/fotos%2Fcomitiva.png?alt=media&token=9edaada9-e085-42b8-b222-799241c65fa9",
+   "creatividad": 5,
+   "tranquilidad": 4,
+   "formalismo": 1,
+   "puntaje": 4.5
+ },
+    
+ "La Comitiva" :{
+   "nombre": "La Comitiva",
+   "descripcion": "Compartir con los amigos alrededor de un buen plato de comida es el mayor de los placeres.",
+   "especialidad": "comida italiana",
+   "precio": 61.2,
+   "direccion": "Calle 4 No. 34 -32 - San Fernando - Cali",
+   "ranking": 4.5,
+   "review": 186,
+   "phone": "(2) 3827292",
+   "tiempo": "1 a 2 horas",
+   "zona": "Norte",
+   "imagen": "https://firebasestorage.googleapis.com/v0/b/fooderhci.appspot.com/o/fotos%2Fcomitiva.png?alt=media&token=9edaada9-e085-42b8-b222-799241c65fa9",
+   "creatividad": 5,
+   "tranquilidad": 4,
+   "formalismo": 1,
+   "puntaje": 4.5
+ },
+    
+ "La Comitiva" :{
+   "nombre": "La Comitiva",
+   "descripcion": "Compartir con los amigos alrededor de un buen plato de comida es el mayor de los placeres.",
+   "especialidad": "comida italiana",
+   "precio": 61.2,
+   "direccion": "Calle 4 No. 34 -32 - San Fernando - Cali",
+   "ranking": 4.5,
+   "review": 186,
+   "phone": "(2) 3827292",
+   "tiempo": "1 a 2 horas",
+   "zona": "Norte",
+   "imagen": "https://firebasestorage.googleapis.com/v0/b/fooderhci.appspot.com/o/fotos%2Fcomitiva.png?alt=media&token=9edaada9-e085-42b8-b222-799241c65fa9",
+   "creatividad": 5,
+   "tranquilidad": 4,
+   "formalismo": 1,
+   "puntaje": 4.5
+ },
  "The Famous Absurdo" :{
    "nombre": "The Famous Absurdo",
    "descripcion": "Abrimos todos los días desde las 11:30 am",
