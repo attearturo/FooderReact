@@ -1854,7 +1854,7 @@ More information [here](https://reacttraining.com/react-router/web/api/BrowserRo
 For example:
 ```js
 <BrowserRouter basename="/calendar"/>
-<Link to="/today"/> // renders <a href="/calendar/today">
+
 ```
 
 #### Serving the Same Build from Different Paths
@@ -1993,7 +1993,7 @@ Finally, make sure **GitHub Pages** option in your GitHub project settings is se
 
 <img src="http://i.imgur.com/HUjEr9l.png" width="500" alt="gh-pages branch setting">
 
-#### Step 5: Optionally, configure the domain
+#### Step 5: Optionally
 
 You can configure a custom domain with GitHub Pages by adding a `CNAME` file to the `public/` folder.
 
